@@ -9,13 +9,31 @@ import (
 )
 
 func main() {
-	err := filepath.Walk("/Users/satoshi/datumix/optimus-backend/", parseFile)
+	var paths []string
+	err := filepath.Walk("",
+		func(fileName string, info os.FileInfo, err error) error {
+			if err != nil{
+				log.Fatal(err)
+				return err
+			}
+			if info.IsDir(){
+				return nil
+			}
+			if filepath.Ext(info.Name()) != ".go"{
+				return nil
+			}
+			paths = append(paths, fileName)
+			return nil
+		})
 
 	//f, err := parser.ParseFile(fset, "README.md", nil, 0)
 	if err != nil {
 		log.Fatal("Error:", err)
 	}
-	//fmt.Println(f)
+	for _, path := range paths{
+		log.Println(path)
+	}
+	//log.Println(paths)
 
 }
 
@@ -31,7 +49,13 @@ func parseFile(fileName string, info os.FileInfo, err error)error{
 	}
 	log.Println(fileName)
 	fset := token.NewFileSet()
-	_, err = parser.ParseFile(fset, fileName, nil, 0)
-	//fmt.Println(f, err)
-	return err
+	f, err := parser.ParseFile(fset, fileName, nil, 0)
+	if err != nil{
+		return err
+	}
+	for _, importSpec := range f.Imports{
+		log.Println(importSpec.Path.Value, f.Name)
+
+	}
+	return nil
 }
