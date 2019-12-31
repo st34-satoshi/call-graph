@@ -93,7 +93,7 @@ func main() {
 	text += "}"
 	log.Println(text)
 	// output to text file
-	dotFileName := `test3.txt`
+	dotFileName := `graph.dot`
 	file, err := os.Create(dotFileName)
 	if err != nil {
 		log.Fatal("Error", err)
@@ -102,14 +102,14 @@ func main() {
 	file.Write(([]byte)(text))
 
 	// save png file
-	err = exec.Command("dot", "-T", "png", dotFileName, "-o", "test4.png").Run()
+	err = exec.Command("dot", "-T", "png", dotFileName, "-o", "graph.png").Run()
 	if err != nil{
 		log.Fatal(err)
 	}
 }
 
 func isExternalPackage(dirName string) (bool, error){
-	externalNames := []string{"github", "com", "net"}
+	externalNames := []string{"github", "com", "net", "encoding", "io", "unicode", ".in"}
 	for _, externalName := range externalNames{
 		if strings.Contains(dirName, externalName){
 			return true, nil
