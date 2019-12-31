@@ -5,6 +5,7 @@ import (
 	"go/token"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 )
@@ -96,12 +97,19 @@ func main() {
 	text += "}"
 	log.Println(text)
 	// output to text file
-	file, err := os.Create(`test3.txt`)
+	dotFileName := `test3.txt`
+	file, err := os.Create(dotFileName)
 	if err != nil {
 		log.Fatal("Error", err)
 	}
 	defer file.Close()
 	file.Write(([]byte)(text))
+
+	// save png file
+	err = exec.Command("dot", "-T", "png", dotFileName, "-o", "test4.png").Run()
+	if err != nil{
+		log.Fatal(err)
+	}
 }
 
 func isExternalPackage(dirName string) (bool, error){
