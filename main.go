@@ -10,7 +10,11 @@ import (
 )
 
 func main() {
-	dirName := ""
+	if len(os.Args) < 2{
+		log.Fatal("Error: no argument. directory name")
+		return
+	}
+	dirName := os.Args[1]
 
 	// find all go files
 	var paths []string
