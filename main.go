@@ -72,10 +72,6 @@ func main() {
 		for importPackage, _ :=  range  importPackages{
 			// remove external package, select only internal package
 			// remove first directory name
-			// TODO modify: using slash is not good. windows is not used slash but yen mark
-			//firstSlash := strings.Index(importPackage, "/")
-			//importPackagePath := importPackage[firstSlash+1:]
-			//log.Println(importPackagePath)
 			topDirectory := strings.Split(importPackage, "/")
 			if len(topDirectory) <= 1{
 				continue
@@ -137,5 +133,9 @@ func parseFile(fileName string) (string, *[]string, error) {
 	log.Println(f.Name)
 	// this directory path
 	lastSlash := strings.LastIndex(fileName, "/")
+	if strings.Contains(fileName[lastSlash:], "main"){
+		// main package has no directory, add main directory
+		return fileName[:lastSlash]+ "/main", &importPaths, nil
+	}
 	return fileName[:lastSlash], &importPaths, nil
 }
