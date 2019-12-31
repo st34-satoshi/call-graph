@@ -61,16 +61,16 @@ func main() {
 	// remove external package
 
 	// output dot file for visualize using graphviz
-	text := "graph G{\n"
+	text := "digraph G{\n"
 	for k, importPackages := range packages{
 		// add to graph dot
 		for importPackage, _ :=  range  importPackages{
 			// remove external package, select only internal package
 			// remove first directory name
 			// TODO modify: using slash is not good. windows is not used slash but yen mark
-			firstSlash := strings.Index(importPackage, "/")
-			importPackagePath := importPackage[firstSlash+1:]
-			log.Println(importPackagePath)
+			//firstSlash := strings.Index(importPackage, "/")
+			//importPackagePath := importPackage[firstSlash+1:]
+			//log.Println(importPackagePath)
 			topDirectory := strings.Split(importPackage, "/")
 			if len(topDirectory) <= 1{
 				continue
@@ -81,13 +81,18 @@ func main() {
 			}
 
 			// add to text
-			text += `  "` + strings.Replace(k, dirName, "", 1) + `" -> ` + importPackage + ";\n"
+			// remove top directory of importPackage
+			// TODO modify: using slash is not good. windows is not used slash but yen mark
+			firstSlash := strings.Index(importPackage, "/")
+			importName := importPackage[firstSlash+1:]
+			text += `  "` + k + `" -> "` + importName + ";\n"
+			//text += `  "` + strings.Replace(k, dirName, "", 1) + `" -> ` + importPackage + ";\n"
 		}
 	}
 	text += "}"
 	log.Println(text)
 	// output to text file
-	file, err := os.Create(`test2.txt`)
+	file, err := os.Create(`test3.txt`)
 	if err != nil {
 		log.Fatal("Error", err)
 	}
