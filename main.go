@@ -6,12 +6,15 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
+	dirName := ""
+
 	// find all go files
 	var paths []string
-	err := filepath.Walk("",
+	err := filepath.Walk(dirName,
 		func(fileName string, info os.FileInfo, err error) error {
 			if err != nil{
 				log.Fatal(err)
@@ -38,27 +41,68 @@ func main() {
 			log.Fatal(err)
 			return
 		}
-		importPackages, exist := packages[filePackage]
+		// remove path from this directory
+		fileName := strings.Replace(filePackage, dirName, "", 1)
+		importPackages, exist := packages[fileName]
 		if exist{
 			for _, importPath := range *importPaths{
 				importPackages[importPath] = 0  // 0 is no meaning. map need key and value but I use only key.
 			}
 		}else{
-			packages[filePackage] = map[string]int{}  // initialize the filePackage value(map).
-			importPackages = packages[filePackage]
+			packages[fileName] = map[string]int{}  // initialize the filePackage value(map).
+			importPackages = packages[fileName]
 			for _, importPath := range *importPaths{
 				importPackages[importPath] = 0  // 0 is no meaning. map need key and value but I use only key.
 			}
 		}
 	}
-	//log.Println(paths)
-	for k, v := range packages{
-		log.Println("file package ",k)
-		for i, _ := range v{
-			log.Println(i)
+
+	// TODO: remove or select
+	// remove external package
+
+	// output dot file for visualize using graphviz
+	text := "graph G{\n"
+	for k, importPackages := range packages{
+		// add to graph dot
+		for importPackage, _ :=  range  importPackages{
+			// remove external package, select only internal package
+			// remove first directory name
+			// TODO modify: using slash is not good. windows is not used slash but yen mark
+			firstSlash := strings.Index(importPackage, "/")
+			importPackagePath := importPackage[firstSlash+1:]
+			log.Println(importPackagePath)
+			topDirectory := strings.Split(importPackage, "/")
+			if len(topDirectory) <= 1{
+				continue
+			}
+			isExternal, _ := isExternalPackage(topDirectory[0])
+			if isExternal{
+				continue
+			}
+
+			// add to text
+			text += `  "` + strings.Replace(k, dirName, "", 1) + `" -> ` + importPackage + ";\n"
 		}
 	}
+	text += "}"
+	log.Println(text)
+	// output to text file
+	file, err := os.Create(`test2.txt`)
+	if err != nil {
+		log.Fatal("Error", err)
+	}
+	defer file.Close()
+	file.Write(([]byte)(text))
+}
 
+func isExternalPackage(dirName string) (bool, error){
+	externalNames := []string{"github", "com", "net"}
+	for _, externalName := range externalNames{
+		if strings.Contains(dirName, externalName){
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 func parseFile(fileName string) (string, *[]string, error) {
@@ -73,5 +117,8 @@ func parseFile(fileName string) (string, *[]string, error) {
 		importPaths = append(importPaths, importSpec.Path.Value)
 		//log.Println(importSpec.Path.Value, f.Name)
 	}
-	return f.Name.Name, &importPaths, nil
+	log.Println(f.Name)
+	// this directory path
+	lastSlash := strings.LastIndex(fileName, "/")
+	return fileName[:lastSlash], &importPaths, nil
 }
