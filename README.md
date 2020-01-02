@@ -12,7 +12,11 @@ You can a graph of internal package relationship.
 - `git clone https://github.com/st34-satoshi/call-graph`
 - `go run main.go <directory path>`
 
+### result
+in the current directory  
 
+- graph.dot
+- graph.png
 
 [](
 memo.  
