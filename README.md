@@ -12,6 +12,9 @@ You can a graph of internal package relationship.
 - `git clone https://github.com/st34-satoshi/call-graph`
 - `go run main.go path/to/your/program/`  
 
+if you want to select a save file name  
+`go run main.go path/to/your/program/ file_name`  
+
 ### result
 in the current directory  
 

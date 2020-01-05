@@ -92,8 +92,13 @@ func main() {
 	}
 	text += "}"
 	log.Println(text)
+
 	// output to text file
-	dotFileName := `graph.dot`
+	fileName := `graph/graph`
+	if len(os.Args) >= 3{
+		fileName = "graph/" + os.Args[2]
+	}
+	dotFileName := fileName + ".dot"
 	file, err := os.Create(dotFileName)
 	if err != nil {
 		log.Fatal("Error", err)
@@ -102,7 +107,8 @@ func main() {
 	file.Write(([]byte)(text))
 
 	// save png file
-	err = exec.Command("dot", "-T", "png", dotFileName, "-o", "graph.png").Run()
+	pngFileName := fileName + ".png"
+	err = exec.Command("dot", "-T", "png", dotFileName, "-o", pngFileName).Run()
 	if err != nil{
 		log.Fatal(err)
 	}
