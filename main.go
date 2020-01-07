@@ -41,7 +41,7 @@ func main() {
 	// create import package map of each package
 	packages := map[string]map[string]int{}
 	for _, path := range paths{
-		filePackage, importPaths, err := parseFile(path)
+		filePackage, importPaths, err := parseFile(path, dirName)
 		if err != nil{
 			log.Fatal(err)
 			return
@@ -124,7 +124,7 @@ func isExternalPackage(dirName string) (bool, error){
 	return false, nil
 }
 
-func parseFile(fileName string) (string, *[]string, error) {
+func parseFile(fileName string, dirName string) (string, *[]string, error) {
 	// return this file package, import package list
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, fileName, nil, 0)
@@ -136,12 +136,13 @@ func parseFile(fileName string) (string, *[]string, error) {
 		importPaths = append(importPaths, importSpec.Path.Value)
 		//log.Println(importSpec.Path.Value, f.Name)
 	}
-	log.Println(f.Name)
+	// return this package directory
 	// this directory path
 	lastSlash := strings.LastIndex(fileName, "/")
-	if strings.Contains(fileName[lastSlash:], "main"){
-		// main package has no directory, add main directory
-		return fileName[:lastSlash]+ "/main", &importPaths, nil
+	log.Println(fileName[:lastSlash+1])
+	if fileName[:lastSlash+1] == dirName{
+		// directory name and package name is not same
+		return fileName[:lastSlash+1] + f.Name.Name, &importPaths, nil
 	}
 	return fileName[:lastSlash], &importPaths, nil
 }
