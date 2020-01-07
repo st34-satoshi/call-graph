@@ -107,8 +107,8 @@ func main() {
 	file.Write(([]byte)(text))
 
 	// save png file
-	pngFileName := fileName + ".png"
-	err = exec.Command("dot", "-T", "png", dotFileName, "-o", pngFileName).Run()
+	gifFileName := fileName + ".gif"
+	err = exec.Command("dot", "-T", "gif", dotFileName, "-o", gifFileName).Run()
 	if err != nil{
 		log.Fatal(err)
 	}
