@@ -91,7 +91,6 @@ func main() {
 		}
 	}
 	text += "}"
-	log.Println(text)
 
 	// output to text file
 	fileName := `graph/graph`
