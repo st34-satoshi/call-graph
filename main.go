@@ -139,7 +139,6 @@ func parseFile(fileName string, dirName string) (string, *[]string, error) {
 	// return this package directory
 	// this directory path
 	lastSlash := strings.LastIndex(fileName, "/")
-	log.Println(fileName[:lastSlash+1])
 	if fileName[:lastSlash+1] == dirName{
 		// directory name and package name is not same
 		return fileName[:lastSlash+1] + f.Name.Name, &importPaths, nil
